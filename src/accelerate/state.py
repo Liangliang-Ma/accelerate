@@ -177,7 +177,7 @@ class PartialState:
 
                     # DeepSpeed always uses nccl
                     kwargs.pop("backend", None)
-                    if is_xpu_available and is_ccl_available():
+                    if is_ccl_available():
                         # Set DeepSpeed backend to ccl for xpu
                         self.backend = "ccl"
                     elif is_npu_available():
@@ -194,6 +194,8 @@ class PartialState:
                         self.device = torch.device("xpu", self.local_process_index)
                         if self.device is not None:
                             torch.xpu.set_device(self.device)
+                    elif is_ccl_available():
+                        self.device = torch.device("cpu")
                     elif is_npu_available():
                         self.device = torch.device("npu", self.local_process_index)
                         if self.device is not None:
